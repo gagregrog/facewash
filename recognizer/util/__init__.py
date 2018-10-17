@@ -1,22 +1,17 @@
-from imutils import paths
 import numpy as np
-import imutils
-from imutils import face_utils
-import pickle
 import dlib
-import cv2
 import os
-
-dirname = os.path.dirname(__file__)
 
 
 def bounding_boxes_to_dlib_rects(boxes):
+    """Accept bounding box in the form (x0, y0, x1, y1) and return a dlib rectangle representation of the box. 
+       Used for facial landmark detection."""
     rects = [dlib.rectangle(left=box[0], top=box[1], right=box[2], bottom=box[3]) for box in boxes]
 
     return rects
 
 
-def get_model_path(model_name):
+def get_model_path(dirname, model_name):
     return os.path.sep.join([dirname, 'models', model_name])
 
 
@@ -35,7 +30,7 @@ def slope(pt1, pt2):
 
 
 def angle(pt1, pt2, deg=True):
-    
+
     rad = np.arctan(slope(pt1, pt2))
 
     return np.rad2deg(rad) if deg else rad
@@ -48,3 +43,15 @@ def angle_from_facial_landmarks(landmarks):
     deg = angle(left_eye_lopez, righty)
 
     return deg
+
+
+def box_to_ellipse(box):
+        x0, y0, x1, y1 = box
+        center_x = int(((x0 + x1) / 2))
+        center_y = int(((y0 + y1) / 2))
+        width = int(np.abs(x0 - x1) / 2)
+        height = int(np.abs(y0 - y1) / 2)
+        center = (center_x, center_y)
+        axes = (width, height)
+
+        return center, axes

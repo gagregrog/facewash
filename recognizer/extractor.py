@@ -6,21 +6,22 @@ import pickle
 import dlib
 import cv2
 import os
-from recognizer import util as u
+import recognizer.util as u
 
 minDim = 10
+dirname = os.path.dirname(__file__)
 
 proto = 'deploy.prototxt'
 embedding_model = 'openface_nn4.small2.v1.t7'
 caffe = 'res10_300x300_ssd_iter_140000.caffemodel'
 landmark = 'shape_predictor_5_face_landmarks.dat'
 
-caffePath = u.get_model_path(caffe)
-protoPath = u.get_model_path(proto)
-landmarkPath = u.get_model_path(landmark)
-embeddingPath = u.get_model_path(embedding_model)
+caffePath = u.get_model_path(dirname, caffe)
+protoPath = u.get_model_path(dirname, proto)
+landmarkPath = u.get_model_path(dirname, landmark)
+embeddingPath = u.get_model_path(dirname, embedding_model)
 
-dirname = os.path.dirname(__file__)
+
 defaultOutput = os.path.sep.join([dirname, 'embeddings', 'output', 'embeddings.pickle'])
 
 
@@ -35,22 +36,9 @@ class Recognizer:
         # for extracting facial landmarks
         self.landmarker = dlib.shape_predictor(landmarkPath)
 
-        self.dliber = dlib.get_frontal_face_detector()
         self.min_conf = min_conf
         self.background = None
         self.width = width
-
-    @staticmethod
-    def box_to_ellipse(box):
-        x0, y0, x1, y1 = box
-        center_x = int(((x0 + x1) / 2))
-        center_y = int(((y0 + y1) / 2))
-        width = int(np.abs(x0 - x1) / 2)
-        height = int(np.abs(y0 - y1) / 2)
-        center = (center_x, center_y)
-        axes = (width, height)
-
-        return center, axes
 
     def resize(self, image):
         if self.width == 0:
@@ -146,7 +134,7 @@ class Recognizer:
 
             tempImg[y0:y1, x0:x1] = cv2.blur(tempImg[y0:y1, x0:x1], (kernal_size, kernal_size))
 
-            center, dims = Recognizer.box_to_ellipse(box)
+            center, dims = u.box_to_ellipse(box)
 
             # solid ellipse on mask
             cv2.ellipse(mask, center, dims, 0, 0, 360, (255), -1)
