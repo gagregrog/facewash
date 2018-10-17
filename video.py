@@ -3,7 +3,7 @@ import imutils
 import argparse
 from time import sleep
 from imutils.video import VideoStream
-from recognizer.recognizer import Recognizer
+from recognizer import Recognizer
 
 ap = argparse.ArgumentParser()
 ap.add_argument('-s', '--src', default=0, type=int)
@@ -21,10 +21,12 @@ sleep(2)
 while True:
     image = vs.read()
     image = imutils.resize(image, width=600)
+
     if args.blur:
         recognizer.blur_faces(image)
     else:
-        recognizer.detect_and_draw(image)
+        recognizer.draw_boxes(image, conf_label=True)
+
     cv2.imshow('Faces', image)
     key = cv2.waitKey(1) & 0xFF
 

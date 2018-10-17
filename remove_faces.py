@@ -3,7 +3,7 @@ import imutils
 import argparse
 from time import sleep
 from imutils.video import VideoStream
-from recognizer.recognizer import Recognizer
+from recognizer import Recognizer
 
 ap = argparse.ArgumentParser()
 ap.add_argument('-p', '--padding', type=int)
