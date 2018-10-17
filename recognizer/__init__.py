@@ -19,7 +19,9 @@ class Recognizer:
         self.detector = cv2.dnn.readNetFromCaffe(protoPath, caffePath)
         self.min_conf = min_conf
 
-    def detect_faces_raw(self, image):
+    def _detect_faces_raw(self, image):
+        """Return the raw facial detections from an image."""
+
         imageBlob = cv2.dnn.blobFromImage(
           cv2.resize(image, (300, 300)), 1.0, (300, 300),
           (104.0, 177.0, 123.0), swapRB=False, crop=False
@@ -29,7 +31,7 @@ class Recognizer:
 
         return detections
 
-    def get_rect_and_conf(self, image, detections, index):
+    def _get_box_and_conf(self, image, detections, index):
         valid = False
         conf = detections[0, 0, index, 2]
 

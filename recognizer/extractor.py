@@ -21,7 +21,6 @@ protoPath = u.get_model_path(dirname, proto)
 landmarkPath = u.get_model_path(dirname, landmark)
 embeddingPath = u.get_model_path(dirname, embedding_model)
 
-
 defaultOutput = os.path.sep.join([dirname, 'embeddings', 'output', 'embeddings.pickle'])
 
 
