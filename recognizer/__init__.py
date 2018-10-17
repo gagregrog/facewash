@@ -1,7 +1,6 @@
-import numpy as np
-import imutils
-import cv2
 import os
+import cv2
+import numpy as np
 import recognizer.util as u
 
 dirname = os.path.dirname(__file__)
@@ -46,25 +45,25 @@ class Recognizer:
 
         return (box, conf) if valid else (None, None)
 
-    def get_rects_and_confs(self, image, detections):
-        rects_and_confs = []
+    def _get_boxes_and_confs(self, image, detections):
+        boxes_and_confs = []
 
         for i in range(0, detections.shape[2]):
-            box, conf = self.get_rect_and_conf(image, detections, i)
+            box, conf = self._get_box_and_conf(image, detections, i)
 
             if box is not None:
-                rects_and_confs.append((box, conf))
+                boxes_and_confs.append((box, conf))
 
-        return rects_and_confs
+        return boxes_and_confs
 
-    def get_rects_and_confs_from_image(self, image):
-        detections = self.detect_faces_raw(image)
-        rects_and_confs = self.get_rects_and_confs(image, detections)
+    def get_boxes_and_confs_from_image(self, image):
+        detections = self._detect_faces_raw(image)
+        boxes_and_confs = self._get_boxes_and_confs(image, detections)
 
-        return rects_and_confs
+        return boxes_and_confs
 
-    def detect_and_draw(self, image, conf_label=False):
-        rects_and_confs = self.get_rects_and_confs_from_image(image)
+    def detect_faces_and_draw_boxes(self, image, conf_label=False):
+        rects_and_confs = self.get_boxes_and_confs_from_image(image)
 
         colors = np.random.uniform(0, 255, size=(len(rects_and_confs), 3))
 
