@@ -8,6 +8,7 @@ from recognizer.recognizer import Recognizer
 ap = argparse.ArgumentParser()
 ap.add_argument('-s', '--src', default=0, type=int)
 ap.add_argument('-c', '--conf', default=0.5, type=float)
+ap.add_argument('-b', '--blur', default=False, action='store_true')
 args = ap.parse_args()
 
 recognizer = Recognizer(min_conf=args.conf)
@@ -20,7 +21,10 @@ sleep(2)
 while True:
     image = vs.read()
     image = imutils.resize(image, width=600)
-    recognizer.detect_and_draw(image)
+    if args.blur:
+        recognizer.blur_faces(image)
+    else:
+        recognizer.detect_and_draw(image)
     cv2.imshow('Faces', image)
     key = cv2.waitKey(1) & 0xFF
 
