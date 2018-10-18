@@ -12,6 +12,7 @@ dirname = os.path.dirname(__file__)
 
 embedding_model = 'openface_nn4.small2.v1.t7'
 
+default_input = os.path.sep.join([dirname, 'data', 'img'])
 embedding_path = u.get_model_path(dirname, embedding_model)
 default_output = os.path.sep.join([dirname, 'data', 'pickle', 'embeddings.pickle'])
 
@@ -74,7 +75,7 @@ class Extractor:
 
         return boxes, vecs
 
-    def extract_and_write_embeddings(self, input, output=default_output):
+    def extract_and_write_embeddings(self, input=default_input, output=default_output):
         imagePaths = list(paths.list_images(input))
 
         embeddings = []
