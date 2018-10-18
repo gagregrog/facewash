@@ -18,4 +18,4 @@ if __name__ == '__main__':
     if args.output is not None:
         passedArgs['output'] = args.output
 
-    extractor.extract_embeddings(**passedArgs)
+    extractor.extract_and_write_embeddings(**passedArgs)

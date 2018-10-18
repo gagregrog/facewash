@@ -34,34 +34,47 @@ class Extractor:
 
         return image
 
+    def _get_vec_from_box(self, image, box):
+        x0, y0, x1, y1 = box
+
+        # extract the face ROI and dims
+        face = image[y0:y1, x0:x1]
+        fH, fW = face.shape[:2]
+
+        # ensure the face is large enough
+        if fW < self.min_dim or fH < self.min_dim:
+            return None
+
+        # construct a blob from the ROI and pass it through the
+        # embedding model to get the 128-d face quantification
+
+        faceBlob = cv2.dnn.blobFromImage(face, 1.0 / 255, (96, 96), (0, 0, 0), swapRB=True, crop=False)
+        self.embedder.setInput(faceBlob)
+        vec = self.embedder.forward()
+
+        return vec
+
     def _get_vec_from_detections(self, image, detections, index):
         image = self.resize(image)
 
-        box, conf = self.detector.get_box_and_conf(image, detections, index)
+        box = self.detector.get_box(image, detections, index)
 
         # ensure the detection meets the min conf
-        if conf is not None:
-            x0, y0, x1, y1 = box
-
-            # extract the face ROI and dims
-            face = image[y0:y1, x0:x1]
-            fH, fW = face.shape[:2]
-
-            # ensure the face is large enough
-            if fW < minDim or fH < minDim:
-                return None
-
-            # construct a blob from the ROI and pass it through the
-            # embedding model to get the 128-d face quantification
-
-            faceBlob = cv2.dnn.blobFromImage(face, 1.0 / 255, (96, 96), (0, 0, 0), swapRB=True, crop=False)
-            self.embedder.setInput(faceBlob)
-            vec = self.embedder.forward()
+        if box is not None:
+            vec = self._get_vec_from_box(image, box)
             flattened = vec.flatten()
 
             return flattened
 
-    def extract_embeddings(self, input, output=default_output):
+    def get_boxes_and_embeddings(self, image):
+        image = self.resize(image)
+        boxes = self.detector.get_boxes_from_image(image)
+
+        vecs = [self._get_vec_from_box(image, box) for box in boxes]
+
+        return boxes, vecs
+
+    def extract_and_write_embeddings(self, input, output=default_output):
         imagePaths = list(paths.list_images(input))
 
         embeddings = []

@@ -68,6 +68,11 @@ class Detector:
 
         return (box, conf) if valid else (None, None)
 
+    def get_box(self, image, detections, index):
+        box = self.get_box_and_conf(image, detections, index)[0]
+
+        return box
+
     def get_boxes_and_confs(self, image, detections):
         boxes_and_confs = []
 

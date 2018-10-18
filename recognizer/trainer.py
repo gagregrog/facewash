@@ -5,8 +5,6 @@ import os
 
 dirname = os.path.dirname(__file__)
 
-embedding_model = 'openface_nn4.small2.v1.t7'
-
 default_embedding_path = os.path.sep.join([dirname, 'data', 'pickle', 'embeddings.pickle'])
 default_recognizer_path = os.path.sep.join([dirname, 'data', 'pickle', 'recognizer.pickle'])
 default_le_path = os.path.sep.join([dirname, 'data', 'pickle', 'le.pickle'])
