@@ -215,3 +215,4 @@ sandbox.py
 *.pickle
 *.jpeg
 *.png
+!recognizer/data/unknown/*.jpg

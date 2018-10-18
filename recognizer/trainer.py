@@ -1,19 +1,20 @@
 from sklearn.preprocessing import LabelEncoder
 from imutils.video import VideoStream
 from sklearn.svm import SVC
-from uuid import uuid4
+import uuid
 from time import sleep
 import numpy as np
 import pickle
 import cv2
 import os
+from detector import Detector
 
 dirname = os.path.dirname(__file__)
 
 default_embedding_path = os.path.sep.join([dirname, 'data', 'pickle', 'embeddings.pickle'])
 default_recognizer_path = os.path.sep.join([dirname, 'data', 'pickle', 'recognizer.pickle'])
 default_le_path = os.path.sep.join([dirname, 'data', 'pickle', 'le.pickle'])
-default_image_path = os.path.sep.join([dirname, 'data', 'img', 'input'])
+default_image_path = os.path.sep.join([dirname, 'data', 'img'])
 
 
 def train_model(embedding_path=default_embedding_path, recognizer_path=default_recognizer_path,
@@ -40,9 +41,14 @@ def train_model(embedding_path=default_embedding_path, recognizer_path=default_r
         f.write(pickle.dumps(le))
 
 
-def generate_training_images(src=0, output=default_image_path, num_pics=10):
+def generate_training_images(src=0, output=default_image_path, num_pics=10, name=None):
+    detector = Detector(colors=[(0, 255, 0)])
+
     if output == default_image_path:
-        output = os.path.sep([output, str(uuid4())])
+        if name is None:
+            name = str(uuid.uuid4())
+
+        output = os.path.sep.join([output, name])
 
     if not os.path.exists(output):
         os.makedirs(output)
@@ -55,20 +61,22 @@ def generate_training_images(src=0, output=default_image_path, num_pics=10):
     i = 0
     while len(imgs) < num_pics or i < 3:
         frame = vs.read()
+        copy = frame.copy()
+        detector.draw_boxes(copy)
 
-        if float(i / 30) == 1.0:
+        if float(i / 15) == 1.0:
             i = 1
             imgs.append(frame)
         elif i == 0:
             i += 1
         elif i < 3:
-            white = (frame.shape[0], frame.shape[1], 1)
+            white = (copy.shape[0], copy.shape[1], 1)
 
-            frame = np.full(white, 254, dtype=np.uint8)
+            copy = np.full(white, 254, dtype=np.uint8)
 
         i += 1
 
-        cv2.imshow('Training Images', frame)
+        cv2.imshow('Training Images', copy)
         cv2.waitKey(1) & 0xFF
 
     vs.stop()

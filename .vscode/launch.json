@@ -10,7 +10,7 @@
       "request": "launch",
       "program": "${file}",
       "console": "integratedTerminal",
-      "args": ["-i", "/Users/i868508/Documents/programming/python/ml/facewash/recognizer/embeddings/input"]
+      "args": ["-g"]
     },
     {
       "name": "Python: Attach",
