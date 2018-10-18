@@ -1,5 +1,5 @@
 import argparse
-from extractor import Extractor
+from recognizer.extractor import Extractor
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()

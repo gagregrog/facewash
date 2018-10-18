@@ -3,7 +3,7 @@ import imutils
 import argparse
 from time import sleep
 from imutils.video import VideoStream
-from recognizer import Recognizer
+from detector import Detector
 
 ap = argparse.ArgumentParser()
 ap.add_argument('-p', '--padding', type=int)
@@ -13,7 +13,7 @@ ap.add_argument('-c', '--conf', default=0.3, type=float)
 ap.add_argument('-f', '--first-frame', action='store_true', default=False)
 args = ap.parse_args()
 
-recognizer = Recognizer(min_conf=args.conf)
+detector = Detector(min_conf=args.conf)
 
 vs = VideoStream(src=args.src)
 
@@ -37,7 +37,7 @@ while True:
     if background is not None:
         arguments['background'] = background
 
-    recognizer.remove_faces(**arguments)
+    detector.remove_faces(**arguments)
     cv2.imshow('Removed Faces', image)
     key = cv2.waitKey(1) & 0xFF
 

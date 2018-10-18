@@ -210,8 +210,8 @@ pip-selfcheck.json
 
 # End of https://www.gitignore.io/api/python,pycharm,visualstudiocode
 
-yolov3.weights
 sandbox.py
-recognizer/embeddings/input/*
 *.jpg
 *.pickle
+*.jpeg
+*.png
