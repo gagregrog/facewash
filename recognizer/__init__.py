@@ -32,22 +32,27 @@ class Recognizer:
             colors = self.extractor.detector.colors
 
         for (i, (box, vec)) in enumerate(zip(boxes, vecs)):
-            predictions = self.recognizer.predict_proba(vec)[0]
-            highest = np.argmax(predictions)
-            probability = predictions[highest]
-            name = self.le.classes_[highest]
+            try:
+                predictions = self.recognizer.predict_proba(vec)[0]
+                highest = np.argmax(predictions)
+                probability = predictions[highest]
+                name = self.le.classes_[highest]
 
-            if draw:
-                box = [int(a) for a in (np.array(box) * r)]
-                x0, y0, x1, y1 = box
+                if draw:
+                    box = [int(a) for a in (np.array(box) * r)]
+                    x0, y0, x1, y1 = box
 
-                color = colors[i]
-                cv2.rectangle(image, (x0, y0), (x1, y1), color, 2)
+                    color = colors[i]
+                    cv2.rectangle(image, (x0, y0), (x1, y1), color, 2)
 
                 if with_prob:
                     text = '{}: {:.2f}'.format(name, probability)
                     y = y0 - 10 if y0 - 10 > 0 else y0 + 10
                     cv2.putText(image, text, (x0, y), cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
+
+            except Exception as e:
+                print('__ERROR__')
+                print(e)
 
     def recognize_and_draw(self, image, colors=None):
         self.recognize(image, draw=True, with_prob=True, colors=colors)
