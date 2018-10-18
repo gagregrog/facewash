@@ -3,7 +3,7 @@ from recognizer.extractor import Extractor
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
-    ap.add_argument('-i', '--input', required=True,
+    ap.add_argument('-i', '--input',
                     help='Path to image dataset for training')
     ap.add_argument('-o', '--output', 
                     help='Path to output serialized facial embeddings')
@@ -13,9 +13,12 @@ if __name__ == '__main__':
 
     extractor = Extractor(min_conf=args.conf)
     
-    passedArgs = {'input': args.input}
+    passedArgs = {}
 
     if args.output is not None:
         passedArgs['output'] = args.output
+    
+    if args.input is not None:
+        passedArgs['input'] = args.input
 
     extractor.extract_and_write_embeddings(**passedArgs)
