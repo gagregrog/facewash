@@ -1,0 +1,10 @@
+dlib==19.16.0
+flake8==3.5.0
+imutils==0.5.1
+mccabe==0.6.1
+numpy==1.15.2
+pycodestyle==2.3.1
+pyflakes==1.6.0
+scikit-learn==0.20.0
+scipy==1.1.0
+sklearn==0.0
