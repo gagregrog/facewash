@@ -6,21 +6,23 @@ import cv2
 import os
 import utils as u
 from detector import Detector
+from random import shuffle
 
 minDim = 10
 dirname = os.path.dirname(__file__)
 
 embedding_model = 'openface_nn4.small2.v1.t7'
+embedding_model_path = u.get_model_path(dirname, embedding_model)
 
-default_input = os.path.sep.join([dirname, 'data', 'img'])
-embedding_path = u.get_model_path(dirname, embedding_model)
-default_output = os.path.sep.join([dirname, 'data', 'pickle', 'embeddings.pickle'])
+default_training_images_path = os.path.sep.join([dirname, 'data', 'img'])
+default_embedding_path = os.path.sep.join([dirname, 'data', 'pickle', 'embeddings.pickle'])
+unknown_path = os.path.sep.join([dirname, 'data', 'unknown'])
 
 
 class Extractor:
     def __init__(self, width=600, min_conf=0.5, min_dim=minDim):
         self.detector = Detector(min_conf=min_conf)
-        self.embedder = cv2.dnn.readNetFromTorch(embedding_path)
+        self.embedder = cv2.dnn.readNetFromTorch(embedding_model_path)
         self.width = width
         self.min_dim = min_dim
 
@@ -63,9 +65,8 @@ class Extractor:
         # ensure the detection meets the min conf
         if box is not None:
             vec = self._get_vec_from_box(image, box)
-            flattened = vec.flatten()
 
-            return flattened
+            return None if vec is None else vec.flatten()
 
     def get_boxes_and_embeddings(self, image):
         image = self.resize(image)
@@ -75,14 +76,25 @@ class Extractor:
 
         return boxes, vecs
 
-    def extract_and_write_embeddings(self, input=default_input, output=default_output):
-        imagePaths = list(paths.list_images(input))
+    def extract_and_write_embeddings(self, training_images_path=default_training_images_path, embedding_path=default_embedding_path):
+        dirs = [dir for dir in os.listdir(training_images_path) if os.path.isdir(os.path.sep.join([training_images_path, dir]))]
+        unknowns = list(paths.list_images(unknown_path))
+
+        dirPaths = [list(paths.list_images(os.path.sep.join([training_images_path, dir]))) for dir in dirs]
+        num_pics = len(dirPaths[np.argmin([len(dir) for dir in dirPaths])])
+        dirPaths.append(unknowns)
+
+        for (i, path) in enumerate(dirPaths):
+            shuffle(path)
+            dirPaths[i] = path[:num_pics]
+
+        imagePaths = np.concatenate(dirPaths, axis=0)
 
         embeddings = []
         names = []
 
         for (i, imagePath) in enumerate(imagePaths):
-            # gets "name" assuming input/name/xxx.jpg
+            # gets "name" assuming training_images_path/name/xxx.jpg
             name = imagePath.split(os.path.sep)[-2]
 
             image = cv2.imread(imagePath)
@@ -106,6 +118,5 @@ class Extractor:
 
         data = {'embeddings': embeddings, 'names': names}
 
-        with open(output, 'wb') as f:
+        with open(embedding_path, 'wb') as f:
             f.write(pickle.dumps(data))
-
