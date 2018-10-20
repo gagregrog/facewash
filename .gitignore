@@ -216,3 +216,4 @@ sandbox.py
 *.jpeg
 *.png
 !recognizer/data/unknown/*.jpg
+.vscode/*

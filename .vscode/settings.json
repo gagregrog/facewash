@@ -1,6 +1,0 @@
-{
-  "python.pythonPath": "/Users/i868508/.virtualenvs/facewash/bin/python",
-  "python.linting.pylintEnabled": false,
-  "python.linting.enabled": true,
-  "python.linting.flake8Enabled": true
-}
