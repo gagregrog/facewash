@@ -57,22 +57,29 @@ def generate_training_images(src=0, output=default_image_path, num_pics=10, name
     vs = VideoStream(src=src)
     vs.start()
     sleep(2)
-
+    snapped = False
     i = 0
     while len(imgs) < num_pics or i < 3:
         frame = vs.read()
         copy = frame.copy()
-        detector.draw_boxes(copy)
+        boxes_and_confs = detector.draw_boxes(copy)
 
-        if float(i / 15) == 1.0:
+        pic_num = len(imgs) + 1
+        cv2.putText(copy, '{} / {}'.format(pic_num, num_pics), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+
+        if float(i / 10) == 1.0:
             i = 1
-            imgs.append(frame)
+            if len(boxes_and_confs) > 0:
+                imgs.append(frame)
+                snapped = True
+
         elif i == 0:
             i += 1
-        elif i < 3:
+        elif i < 3 and snapped is True:
             white = (copy.shape[0], copy.shape[1], 1)
-
             copy = np.full(white, 254, dtype=np.uint8)
+        elif i == 3 and snapped is True:
+            snapped = False
 
         i += 1
 
