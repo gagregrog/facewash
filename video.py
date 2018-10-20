@@ -14,7 +14,7 @@ ap.add_argument('-l', '--landmarks', default=False, action='store_true')
 ap.add_argument('-x', '--remove', default=False, action='store_true')
 ap.add_argument('-ff', '--first-frame', default=False, action='store_true')
 ap.add_argument('-bg', '--background')
-ap.add_argument('-p', '--padding')
+ap.add_argument('-p', '--padding', type=int)
 ap.add_argument('-w', '--width', default=600, type=int)
 ap.add_argument('-r', '--recognize', default=False, action='store_true')
 ap.add_argument('-rp', '--recognizer-path')
@@ -49,7 +49,7 @@ while True:
     image = vs.read()
 
     if args.width != 0:
-        image = imutils.resize(image, width=600)
+        image = imutils.resize(image, width=args.width)
 
     if args.recognize:
         recognizer.recognize_and_draw(image)
@@ -65,7 +65,7 @@ while True:
             continue
 
         if background is not None:
-            passed_args['background'] = args.background
+            passed_args['background'] = background
 
         if args.padding is not None:
             passed_args['padding'] = args.padding
