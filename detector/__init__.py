@@ -108,6 +108,8 @@ class Detector:
                 y = (y0 - 10) if ((y0 - 10) > 0) else (y0 + 10)
                 cv2.putText(image, 'Conf: {:.2f}'.format(conf), (x0, y),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 0), thickness)
+        
+        return boxes_and_confs
 
     def draw_boxes_angles_and_landmarks(self, image, colors=None, show_angle=False):
         self._verify_landmarker()
