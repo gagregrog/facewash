@@ -21,33 +21,30 @@ class Transformer:
         # otherwise replacement is the most recent empty frame
         if replacement is not None:
             for box in boxes:
-                x0, y0, x1, y1 = box
-
-                if padding is not None:
-                    x0 = x0 - padding if x0 - padding > 0 else 0
-                    y0 = y0 - padding if y0 - padding > 0 else 0
-                    x1 = x1 + padding if x1 + padding < w else w
-                    y1 = y1 + padding if y1 + padding < h else h
+                x0, y0, x1, y1 = box if padding is None else u.pad_box(h, w, box, padding)
 
                 image[y0:y1, x0:x1] = replacement[y0:y1, x0:x1]
 
-    def blur_faces(self, image, boxes, kernal_size=50):
+    def blur_faces(self, image, boxes, angles=None, kernal_size=50, padding=None):
         tempImg = image.copy()
+        tempImg[:, :] = cv2.blur(tempImg[:, :], (kernal_size, kernal_size))
         # height, width, 1 channel
         maskShape = (image.shape[0], image.shape[1], 1)
 
         # fill it with zeros, an empty canvas
         mask = np.full(maskShape, 0, dtype=np.uint8)
+        h, w = image.shape[:2]
 
-        for box in boxes:
-            x0, y0, x1, y1 = box
-
-            tempImg[y0:y1, x0:x1] = cv2.blur(tempImg[y0:y1, x0:x1], (kernal_size, kernal_size))
-
+        for (i, box) in enumerate(boxes):
+            if padding is not None:
+                box = u.pad_box(h, w, box, padding)
+                
             center, dims = u.box_to_ellipse(box)
 
+            angle = 0 if angles is None else angles[i]
+
             # solid ellipse on mask
-            cv2.ellipse(mask, center, dims, 0, 0, 360, (255), -1)
+            cv2.ellipse(mask, center, dims, angle, 0, 360, (255), -1)
 
         # get everything but the ellipse
         mask_inv = cv2.bitwise_not(mask)

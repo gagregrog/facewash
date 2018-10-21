@@ -142,8 +142,10 @@ class Detector:
         boxes = self.get_boxes_from_image(image)
         self.transformer.remove_faces(image, boxes, background, padding)
 
-    def blur_faces(self, image, kernal_size=50):
+    def blur_faces(self, image, kernal_size=50, padding=None):
         self._verify_transformer()
+        self._verify_landmarker()
 
         boxes = self.get_boxes_from_image(image)
-        self.transformer.blur_faces(image, boxes, kernal_size)
+        angles = self.landmarker.get_angles_from_boxes(image, boxes)
+        self.transformer.blur_faces(image, boxes=boxes, angles=angles, kernal_size=kernal_size, padding=padding)

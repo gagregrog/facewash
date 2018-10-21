@@ -42,7 +42,7 @@ def angle_from_facial_landmarks(landmarks):
 
     deg = angle(left_eye_lopez, righty)
 
-    return -1 * deg
+    return deg
 
 
 def box_to_ellipse(box):
@@ -55,3 +55,14 @@ def box_to_ellipse(box):
         axes = (width, height)
 
         return center, axes
+
+
+def pad_box(h, w, box, padding=10):
+    x0, y0, x1, y1 = box
+
+    x0 = x0 - padding if x0 - padding > 0 else 0
+    y0 = y0 - padding if y0 - padding > 0 else 0
+    x1 = x1 + padding if x1 + padding < w else w
+    y1 = y1 + padding if y1 + padding < h else h
+
+    return (x0, y0, x1, y1)

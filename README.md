@@ -340,11 +340,13 @@ cv2.imshow('Headless', img)
 cv2.waitKey(0)
 ```
 
-##### `detector.blur_faces(image, kernal_size=50)`
+##### `detector.blur_faces(image, kernal_size=50, padding=None)`
 
 Blur the oval region over the detected faces in the image.
 
 `kernal_size` affects the blurriness. Higher values are more blurred.
+
+`padding` increases the area of the blurred region in each direction.
 
 This is a convenience method that accesses the `Transformer` class.
 
@@ -508,12 +510,25 @@ cv2.imshow('Faceless', img)
 cv2.waitKey(0)
 ```
 
-##### `transformer.blur_faces(image, boxes, kernal_size=50)`
+##### `transformer.blur_faces(image, boxes, angles, kernal_size=50, padding=None)`
 
-For each box, blur the image with an ellipse that fills the box. Bigger `kernal_size` means blurrier.
+For each box, blur the image with an ellipse that fills the box. Bigger `kernal_size` means blurrier. `padding` increases the area of the blurred image.
 
 ```
-transformer.blur_faces(img, boxes)
+from detector.landmarks import Landmarker
+
+landmarker = Landmarker()
+angles = landmarker.get_angles_from_boxes(img, boxes)
+transformer.blur_faces(img, boxes, angles)
+
+cv2.imshow('Blurry', img)
+cv2.waitKey(0)
+```
+
+Or, more succinctly accessed through the `detector` instance:
+
+```
+detector.blur_faces(img):
 
 cv2.imshow('Blurry', img)
 cv2.waitKey(0)

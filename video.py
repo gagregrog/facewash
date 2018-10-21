@@ -54,7 +54,7 @@ while True:
     if args.recognize:
         recognizer.recognize_and_draw(image)
     elif args.blur:
-        detector.blur_faces(image)
+        detector.blur_faces(image, padding=args.padding)
     elif args.landmarks:
         detector.draw_boxes_angles_and_landmarks(image, show_angle=True)
     elif args.remove:
