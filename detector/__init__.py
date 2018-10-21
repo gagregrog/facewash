@@ -95,6 +95,24 @@ class Detector:
 
         return boxes
 
+    def get_all_from_image(self, image):
+        self._verify_landmarker()
+
+        boxes = []
+        confs = []
+
+        detections = self.detect_faces_raw(image)
+        boxes_and_confs = self.get_boxes_and_confs(image, detections)
+
+        for (box, conf) in boxes_and_confs:
+            boxes.append(box)
+            confs.append(conf)
+
+        landmarks = self.landmarker.get_facial_landmarks(image, boxes)
+        angles = [u.angle_from_facial_landmarks(landmark) for landmark in landmarks]
+
+        return (boxes, confs, landmarks, angles)
+
     def draw_boxes(self, image, colors=None, conf_label=False, thickness=2):
         boxes_and_confs = self.get_boxes_and_confs_from_image(image)
         colors = self._get_colors(colors, len(boxes_and_confs))

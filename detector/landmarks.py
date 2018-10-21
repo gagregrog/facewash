@@ -50,3 +50,9 @@ class Landmarker:
                             cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
 
             self.draw_5_point_landmark(image, landmarks, color)
+
+    def get_angles_from_boxes(self, image, boxes):
+        landmarks = self.get_facial_landmarks(image, boxes)
+        angles = [u.angle_from_facial_landmarks(landmark) for landmark in landmarks]
+
+        return angles
