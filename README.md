@@ -1,10 +1,27 @@
 # Facewash
 
+A set of facial detection, recognition, and transformation utilities for images and video streams. Use the CLI to get started, or import the modules into a project.
+
 ## Install
 
-1. [Setup and activate a virtualenv](https://docs.python-guide.org/dev/virtualenvs/)
+Requires python3.x and OpenCV >= 3.4
+
+1. [Setup and activate a virtualenv](https://docs.python-guide.org/dev/virtualenvs/).
 2. Install project requirements: `pip install -r requirements.txt`
-3. [Install OpenCV 4 from source](https://www.pyimagesearch.com/category/opencv-4/) or, install OpenCV 3.4 using pip `pip install opencv-contrib-python`
+3. [Install OpenCV 4 from source](https://www.pyimagesearch.com/category/opencv-4/) or, install OpenCV 3.4 using `pip install opencv-contrib-python`.
+
+## Contents
+
+- [CLI](#cli)
+  - [video.py](#video.py)
+  - [train.py](#train.py)
+- [API](#api)
+  - [Detector](#detector())
+  - [Landmarker](#landmarker())
+  - [Transformer](#transformer())
+  - [Recognizer](#recognizer())
+  - [Extractor](#extractor())
+  - [Trainer](#trainer)
 
 ## CLI
 
@@ -76,6 +93,8 @@ Operations take precedence in the following order:
   - `-p`, `--padding`
   
     When removing faces, add extra padding around the ROI for better coverage.
+
+    [[top]](#facewash)
 
 ### `train.py`
 
@@ -182,7 +201,9 @@ Operations take precedence in the following order:
 
     By omitting `-g`, `-x`, and `-t` flags it is assumed that you are extracting facial embeddings from an existing image set. Provide all of the necessary flags required for both extracting and training.
 
-## Classes and Methods
+    [[top]](#facewash)
+
+## API
 
 ### `Detector()`
 
@@ -334,6 +355,8 @@ cv2.imshow('Blurry', img)
 cv2.waitKey(0)
 ```
 
+[[top]](#facewash)
+
 ### `Landmarker()`
 
 Extract the 5 point facial landmarks from a facial ROI. Uses `shape_predictor_5_face_landmarks.dat` for landmark detection.
@@ -412,6 +435,8 @@ Returns an array of face angles for a given image.
 ```
 angles = landmarker.get_angles_from_boxes(img, boxes)
 ```
+
+[[top]](#facewash)
 
 ### `Transformer()`
 
@@ -494,6 +519,8 @@ cv2.imshow('Blurry', img)
 cv2.waitKey(0)
 ```
 
+[[top]](#facewash)
+
 ### `Recognizer()`
 
 Recognize faces in images after extracting facial embeddings and training models.
@@ -575,10 +602,89 @@ Convenience method for accessing `Extractor` and `Trainer` methods.
 
 If an `embedding_path` was passed during instantiation, it will be used for extracting and training. Otherwise the default path of `facewash/recognizer/data/pickle/embeddings.pickle` will be used.
 
-If `training_images_path` is provided it will be passed to the extractor. Otherwise the default path of `facewash/recognizer/data/img` will be used. This path needs to contain directories named by person including training images, photos containing only that person. The more the better.
+If `training_images_path` is provided, it will be passed to the extractor. Otherwise, the default path of `facewash/recognizer/data/img` will be used. This path needs to contain directories named by person including training images &mdash; photos containing only that person. The more the better.
 
 As this is a convenience method, it calls `extractor.extract_and_write_embeddings()` and then `train_model()` for you.
 
 The result is a recognizer file and label encoder file saved to the paths passed during instantiation, or the defaults otherwise.
 
 After the model has been trained, `load_models` is called, so you could theoretically start recognizing faces immediately.
+
+[[top]](#facewash)
+
+### `Extractor()`
+
+Extract 128-dimensional facial embeddings from a set of training images.
+
+#### Optional Arguments
+
+- `width=600`
+
+  The width to resize training images to. This value needs to match the value of `recognizer.width` when recognizing faces. Best to leave this at the default.
+
+- `min_conf=0.5`
+
+  Confidence used to reject bad training images.
+
+- `min_dim=10`
+
+  Minimum side length for a detected face. Rejected if smaller.
+
+
+#### Instantiation
+
+  ```
+  from recognizer.extractor import Extractor
+
+  extractor = Extractor()
+  ```
+
+#### Methods
+
+##### `extractor.get_boxes_and_embeddings(image)`
+
+Given a `cv2` image, detect faces, returning the bounding boxes and extracted embeddings for each face. Returned as two arrays.
+
+##### `extractor.extract_and_write_embeddings(training_images_path, embedding_path)`
+
+Take the training images and extract the facial embeddings, writing the results to `embedding_path`. If no path is given,
+defaults to `facewash/recognizer/data/pickle/embeddings.pickle`.
+
+If `training_images_path` is not provided, it will default to `facewash/recognizer/data/img`. This path needs to contain directories named by person including training images &mdash; photos containing only that person. The more the better.
+
+Don't forget that after you extract the facial embeddings, you still need to train a model before you can recognize images. Consider using `recognizer.extract_and_train(...)` instead.
+
+[[top]](#facewash)
+
+### Trainer
+
+Not a class, merely a library providing two training functions.
+
+#### Import
+
+  ```
+  from recognizer import trainer
+  ```
+
+#### Methods
+
+##### `trainer.train_model(embedding_path, recognizer_path, le_path)`
+
+Requires a `pickle` file (`embedding_path`) containing `embeddings` and `names`, extracted using `extractor.extract_and_write_embeddings(...)`.
+
+`embedding_path` defaults to `facewash/recognizer/data/pickle/embeddings.pickle`.
+
+`recognizer_path` is the output for the trained recognizer. It defaults to `facewash/recognizer/data/pickle/recognizer.pickle`. This is used in the `Recognizer` class to recognize faces.
+
+`le_path` is the output for the label encoder. It defaults to `facewash/recognizer/data/pickle/le.pickle`. This is used in the `Recognizer` class to identify the recognized faces.
+
+
+##### `trainer.generate_training_images(src=0, output, num_pics=10, name=None)`
+
+Starts the webcam and grabs `num_pics` images from the camera. Every 10 frames a picture is taken (as long as a single face has been detected in the frame).
+
+The default `output` is `facewash/recognizer/data/img/<uuid>`, or if you provide a `name` it will be `facewash/recognizer/data/img/<name>`. Or, provide your own path to a folder to dump images by providing `output`.
+
+Since these images will be used to train the model, it is important to provide a variety of different facial expressions and angles. The more pictures you use, the better the model will be (theoretically).
+
+[[top]](#facewash)
