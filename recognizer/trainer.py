@@ -69,7 +69,7 @@ def generate_training_images(src=0, output=default_image_path, num_pics=10, name
 
         if float(i / 10) == 1.0:
             i = 1
-            if len(boxes_and_confs) > 0:
+            if len(boxes_and_confs) == 1:
                 imgs.append(frame)
                 snapped = True
 

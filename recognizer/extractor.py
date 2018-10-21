@@ -76,7 +76,8 @@ class Extractor:
 
         return boxes, vecs
 
-    def extract_and_write_embeddings(self, training_images_path=default_training_images_path, embedding_path=default_embedding_path):
+    def extract_and_write_embeddings(self, training_images_path=default_training_images_path, 
+                                     embedding_path=default_embedding_path):
         dirs = [dir for dir in os.listdir(training_images_path) if os.path.isdir(os.path.sep.join([training_images_path, dir]))]
         unknowns = list(paths.list_images(unknown_path))
 
