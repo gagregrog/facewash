@@ -7,18 +7,27 @@ from detector import Detector
 from recognizer import Recognizer
 
 ap = argparse.ArgumentParser()
-ap.add_argument('-s', '--src', default=0, type=int)
-ap.add_argument('-c', '--conf', default=0.5, type=float)
-ap.add_argument('-b', '--blur', default=False, action='store_true')
-ap.add_argument('-l', '--landmarks', default=False, action='store_true')
-ap.add_argument('-x', '--remove', default=False, action='store_true')
-ap.add_argument('-ff', '--first-frame', default=False, action='store_true')
-ap.add_argument('-bg', '--background')
-ap.add_argument('-p', '--padding', type=int)
-ap.add_argument('-w', '--width', default=600, type=int)
-ap.add_argument('-r', '--recognize', default=False, action='store_true')
-ap.add_argument('-rp', '--recognizer-path')
-ap.add_argument('-lp', '--label-path')
+ap.add_argument('-s', '--src', default=0, type=int,
+                help='0 = Built in, 1 = Webcam 1, etc.')
+ap.add_argument('-c', '--conf', default=0.5, type=float,
+                help='Minimum confidence for detecting a face. Values between (0, 1)')
+ap.add_argument('-b', '--blur', default=False, action='store_true',
+                help='Boolean flag. Blur faces in video stream.')
+ap.add_argument('-l', '--landmarks', default=False, action='store_true',
+                help='Boolean flag. Show landmarks in video stream.')
+ap.add_argument('-se', '--sixty-eight', default=False, action='store_true',
+                help='Boolean flag. Use with -l, show 68-point landmarks.')
+ap.add_argument('-x', '--remove', default=False, action='store_true',
+                help='Boolean flag. Remove faces. See -ff and -bg')
+ap.add_argument('-ff', '--first-frame', default=False, action='store_true',
+                help='Boolean flag. Use with -x. Grab the first frame as background.')
+ap.add_argument('-bg', '--background', help='Use with -x. Provide path to background image for replacement.')
+ap.add_argument('-p', '--padding', type=int, help='Pixel padding for blurring/removing.')
+ap.add_argument('-w', '--width', default=600, type=int, help='Video width. Height automatic. 0 for full size.')
+ap.add_argument('-r', '--recognize', default=False, action='store_true',
+                help='Boolean flag. Recognize faces in video stream. Use with defaults or pass -rp and -lp.')
+ap.add_argument('-rp', '--recognizer-path', help='Path to recognizer pickle file to use.')
+ap.add_argument('-lp', '--label-path', help='Path to label encoder pickle file to use.')
 args = ap.parse_args()
 
 detector = None
@@ -56,7 +65,7 @@ while True:
     elif args.blur:
         detector.blur_faces(image, padding=args.padding)
     elif args.landmarks:
-        detector.draw_boxes_angles_and_landmarks(image, show_angle=True)
+        detector.draw_boxes_angles_and_landmarks(image, show_angle=True, sixty_eight=args.sixty_eight)
     elif args.remove:
         passed_args = {'image': image}
 

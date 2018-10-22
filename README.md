@@ -76,6 +76,10 @@ Operations take precedence in the following order:
   
   Draw 5 point facial landmarks and display angle of the head.
 
+  - `-se`, `--sixty-eight`
+
+  Use the 68-point facial landmarks instead of the 5-point.
+
 - `-x`, `--remove`
   
   Remove faces found in the video stream. Each frame without detected faces gets set as the background image.
@@ -308,11 +312,13 @@ cv2.imshow('Faces', img)
 cv2.waitKey(0)
 ```
 
-##### `detector.draw_boxes_angles_and_landmarks(image, colors=None, show_angle=False)`
+##### `detector.draw_boxes_angles_and_landmarks(image, colors=None, show_angle=False, sixty_eight=False)`
 
 Draws the 5 point facial landmarks to the image.
 
 `colors` as described above.
+
+If `sixty_eight` is `True`, then 68-point facial landmark detections will be used.
 
 If `show_angle` is `True` the angle of the face will be printed to the screen.
 
@@ -390,9 +396,9 @@ The methods require the `boxes` returned from the `Detector` class, so while you
 
 #### Methods
 
-##### `landmarker.get_facial_landmarks(image, boxes)`
+##### `landmarker.get_facial_landmarks(image, boxes, sixty_eight=False)`
 
-Requires a `cv2` image and array of bounding boxes. Returns an array including facial landmarks for each face. Each set of facial landmarks is an array of xy-coordinates marking a point on the 2 corners of each eye and a point below the nose.
+Requires a `cv2` image and array of bounding boxes. Returns an array including facial landmarks for each face. By default each set of facial landmarks is an array of xy-coordinates marking a point on the 2 corners of each eye and a point below the nose. If `sixty_eight` is `True`, then the 68-point detection will be used instead of the 5-point detection.
 
 ```
 img = cv2.imread('people.jpg')
@@ -411,17 +417,19 @@ facial_landmarks = landmarker.get_facial_landmarks(img, boxes)
 ]
 ```
 
-##### `landmarker.draw_5_point_landmark(image, landmarks, color=(0, 255, 0))`
+##### `landmarker.draw_landmarks(image, landmarks, color=(0, 255, 0))`
 
 Draw a single set of landmarks on an image.
 
 ```
-landmarker.draw_5_point_landmark(img, facial_landmarks[0], (0, 0, 0))
+landmarker.draw_landmarks(img, facial_landmarks[0], (0, 0, 0))
 ```
 
-##### `landmarker.draw_landmarks_and_boxes(image, boxes, colors=None, show_angle=False)`
+##### `landmarker.draw_landmarks_and_boxes(image, boxes, colors=None, show_angle=False, sixty_eight=False)`
 
 Draw all landmarks and bounding boxes. If using the detector, it is a good idea to pass `detector.colors` to maintain consistent colors.
+
+If `sixty_eight` is true the 68-point landmark will be drawn, otherwise the 5-point will be drawn.
 
 If `show_angle` is true the angle of the head is crudely calculated and displayed on screen.
 

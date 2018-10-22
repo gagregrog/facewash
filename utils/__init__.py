@@ -37,10 +37,16 @@ def angle(pt1, pt2, deg=True):
 
 
 def angle_from_facial_landmarks(landmarks):
-    left_eye_lopez = midpoint(landmarks[0], landmarks[1])
-    righty = midpoint(landmarks[2], landmarks[3])
+    a, b, c, d = None, None, None, None
+    if len(landmarks) == 5:
+        a, b, c, d = 0, 1, 2, 3
+    else:
+        a, b, c, d = 45, 42, 39, 36
 
-    deg = angle(left_eye_lopez, righty)
+    lefty = midpoint(landmarks[a], landmarks[b])
+    righty = midpoint(landmarks[c], landmarks[d])
+
+    deg = angle(lefty, righty)
 
     return deg
 

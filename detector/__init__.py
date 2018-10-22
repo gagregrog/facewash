@@ -129,12 +129,12 @@ class Detector:
         
         return boxes_and_confs
 
-    def draw_boxes_angles_and_landmarks(self, image, colors=None, show_angle=False):
+    def draw_boxes_angles_and_landmarks(self, image, colors=None, show_angle=False, sixty_eight=False):
         self._verify_landmarker()
 
         boxes = self.get_boxes_from_image(image)
         colors = self._get_colors(colors, len(boxes))
-        self.landmarker.draw_landmarks_and_boxes(image, boxes, colors, show_angle)
+        self.landmarker.draw_landmarks_and_boxes(image, boxes, colors, show_angle, sixty_eight=sixty_eight)
 
     def remove_faces(self, image, background=None, padding=None):
         self._verify_transformer()
