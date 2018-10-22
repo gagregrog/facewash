@@ -25,9 +25,12 @@ class Landmarker:
         facial_landmarks = []
 
         predictor = self.predictor5 if sixty_eight is False else self.predictor68
+        
+        # convert to rhb for dlib
+        rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         for rect in rects:
-            shapes = predictor(image, rect)
+            shapes = predictor(rgb, rect)
             shapes = face_utils.shape_to_np(shapes)
             facial_landmarks.append(shapes)
 
@@ -35,7 +38,7 @@ class Landmarker:
 
     def draw_landmarks(self, image, landmarks, color=(0, 255, 0)):
         for (x, y) in landmarks:
-            cv2.circle(image, (x, y), 2, color, -1)
+            cv2.circle(image, (x, y), 1, color, -1)
 
     def draw_landmarks_and_boxes(self, image, boxes, colors=None, show_angle=False, sixty_eight=False):
         facial_landmarks = self.get_facial_landmarks(image, boxes, sixty_eight=sixty_eight)
