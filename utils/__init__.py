@@ -3,10 +3,18 @@ import dlib
 import os
 
 
+def bounding_box_to_dlib_rect(box):
+    """Accept bounding box in the form (x0, y0, x1, y1) and return a dlib rectangle representation of the box. 
+       Used for facial landmark detection."""
+    rect = dlib.rectangle(left=box[0], top=box[1], right=box[2], bottom=box[3])
+
+    return rect
+
+
 def bounding_boxes_to_dlib_rects(boxes):
     """Accept bounding box in the form (x0, y0, x1, y1) and return a dlib rectangle representation of the box. 
        Used for facial landmark detection."""
-    rects = [dlib.rectangle(left=box[0], top=box[1], right=box[2], bottom=box[3]) for box in boxes]
+    rects = [bounding_box_to_dlib_rect(box) for box in boxes]
 
     return rects
 
